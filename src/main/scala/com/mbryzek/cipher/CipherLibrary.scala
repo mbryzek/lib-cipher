@@ -112,14 +112,12 @@ case class CipherLibraryMindrot(config: CiphersConfig) extends CipherLibrary {
 
   override val key: String = "mindrot"
   override def isValid(plaintext: String, hash: String, salt: Option[String] = None): Boolean = {
-    BCrypt.checkpw(plaintext, hash)
+    BCrypt.checkpw(plaintext, Base64Util.decode(hash))
   }
 
   override def hash(plaintext: String): HashedValue = {
-    val salt = BCrypt.gensalt(config.rounds)
-    println(s"salt: $salt")
-    toHashedValue(Some(salt)) {
-      BCrypt.hashpw(plaintext, salt)
+    toHashedValue(None) {
+      BCrypt.hashpw(plaintext, BCrypt.gensalt(config.rounds))
     }
   }
 }
