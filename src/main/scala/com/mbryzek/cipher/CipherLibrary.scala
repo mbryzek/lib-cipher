@@ -1,7 +1,5 @@
 package com.mbryzek.cipher
 
-import com.password4j.BcryptFunction
-
 import java.security.SecureRandom
 
 /** @param hash
@@ -56,7 +54,7 @@ sealed trait CipherLibrary {
 }
 
 case class CipherLibraryPassword4J(config: CiphersConfig) extends CipherLibrary {
-  import com.password4j.Password
+  import com.password4j.{BcryptFunction, Password}
   import com.password4j.types.Bcrypt
 
   private val bcrypt = BcryptFunction.getInstance(Bcrypt.B, config.rounds)
