@@ -22,7 +22,11 @@ object Ciphers {
 }
 
 case class Ciphers(config: CiphersConfig = Ciphers.DefaultConfig) {
-  val libraries: Seq[CipherLibrary] = Seq(CipherLibraryT3(config), CipherLibraryPassword4J(config))
+  val libraries: Seq[CipherLibrary] = Seq(
+    CipherLibraryT3(config),
+    CipherLibraryPassword4J(config),
+    CipherLibraryMindrot(config)
+  )
 
   def latest: CipherLibrary = CipherLibraryPassword4J(config)
 
@@ -54,8 +58,8 @@ sealed trait CipherLibrary {
 }
 
 case class CipherLibraryPassword4J(config: CiphersConfig) extends CipherLibrary {
-  import com.password4j.{BcryptFunction, Password}
   import com.password4j.types.Bcrypt
+  import com.password4j.{BcryptFunction, Password}
 
   private val bcrypt = BcryptFunction.getInstance(Bcrypt.B, config.rounds)
 
@@ -100,5 +104,22 @@ case class CipherLibraryT3(config: CiphersConfig) extends CipherLibrary {
 
   private def withSalt(salt: String, plaintext: String): String = {
     s"$salt:$plaintext"
+  }
+}
+
+case class CipherLibraryMindrot(config: CiphersConfig) extends CipherLibrary {
+  import org.mindrot.jbcrypt.BCrypt
+
+  override val key: String = "mindrot"
+  override def isValid(plaintext: String, hash: String, salt: Option[String] = None): Boolean = {
+    BCrypt.checkpw(plaintext, hash)
+  }
+
+  override def hash(plaintext: String): HashedValue = {
+    val salt = BCrypt.gensalt(config.rounds)
+    println(s"salt: $salt")
+    toHashedValue(Some(salt)) {
+      BCrypt.hashpw(plaintext, salt)
+    }
   }
 }
