@@ -40,7 +40,12 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
 
   "instance" in {
     Ciphers().instance("password4j").get.key mustBe "password4j"
+    Ciphers().instance("mindrot").get.key mustBe "mindrot"
     Ciphers().instance("t3hnar").get.key mustBe "t3hnar"
     Ciphers().instance(UUID.randomUUID().toString) mustBe None
+  }
+
+  "all library keys are distinct" in {
+    Ciphers().libraries.map(_.key).distinct.length mustBe Ciphers().libraries.length
   }
 }
