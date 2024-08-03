@@ -29,8 +29,8 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "com.password4j" % "password4j" % "1.8.2",
       "com.github.t3hnar" %% "scala-bcrypt" % "4.3.0",
-      "commons-codec" % "commons-codec" % "1.17.0",
+      "commons-codec" % "commons-codec" % "1.17.1",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
-version := "0.0.2"
+version := "0.0.3"
