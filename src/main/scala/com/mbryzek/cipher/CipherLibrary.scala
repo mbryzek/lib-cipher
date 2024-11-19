@@ -17,7 +17,7 @@ case class CiphersConfig(rounds: Int)
 
 object Ciphers {
   private[cipher] val random: SecureRandom = new SecureRandom()
-  val DefaultConfig: CiphersConfig = CiphersConfig(rounds = 13)
+  val DefaultConfig: CiphersConfig = CiphersConfig(rounds = 14)
   val Default: Ciphers = Ciphers(DefaultConfig)
 }
 
