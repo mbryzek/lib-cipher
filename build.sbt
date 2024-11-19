@@ -2,7 +2,7 @@ name := "lib-cipher"
 
 organization := "com.mbryzek"
 
-ThisBuild / scalaVersion := "2.13.14"
+ThisBuild / scalaVersion := "2.13.15"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
