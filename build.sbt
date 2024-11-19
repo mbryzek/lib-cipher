@@ -33,4 +33,4 @@ lazy val root = project
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
-version := "0.0.3"
+version := "0.0.7"
