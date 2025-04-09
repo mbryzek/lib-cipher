@@ -4,6 +4,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import java.util.UUID
+import scala.util.{Failure, Success, Try}
 
 class CipherLibrarySpec extends AnyWordSpec with Matchers {
 
@@ -35,11 +36,12 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
   }
 
   "latest" in {
-    Ciphers().latest.key mustBe "password4j"
+    Ciphers().latest.key mustBe "password4j_prehash"
   }
 
   "instance" in {
     Ciphers().instance("password4j").get.key mustBe "password4j"
+    Ciphers().instance("password4j_prehash").get.key mustBe "password4j_prehash"
     Ciphers().instance("mindrot").get.key mustBe "mindrot"
     Ciphers().instance("t3hnar").get.key mustBe "t3hnar"
     Ciphers().instance(UUID.randomUUID().toString) mustBe None
@@ -47,5 +49,19 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
 
   "all library keys are distinct" in {
     Ciphers().libraries.map(_.key).distinct.length mustBe Ciphers().libraries.length
+  }
+
+  "supports long passwords" in {
+    val plaintext = "a" * 100
+    Ciphers().libraries
+      .filterNot(_.key == "t3hnar")
+      .flatMap { lib =>
+      Try {
+        lib.hash(plaintext)
+      } match {
+        case Success(enc) => None
+        case Failure(ex) => Some(s"Lib[${lib.key}] failed to hash long password: ${ex.getMessage}")
+      }
+    } mustBe Nil
   }
 }
