@@ -36,12 +36,11 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
   }
 
   "latest" in {
-    Ciphers().latest.key mustBe "password4j_prehash"
+    Ciphers().latest.key mustBe "password4j"
   }
 
   "instance" in {
     Ciphers().instance("password4j").get.key mustBe "password4j"
-    Ciphers().instance("password4j_prehash").get.key mustBe "password4j_prehash"
     Ciphers().instance("mindrot").get.key mustBe "mindrot"
     Ciphers().instance("t3hnar").get.key mustBe "t3hnar"
     Ciphers().instance(UUID.randomUUID().toString) mustBe None
@@ -56,12 +55,12 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
     Ciphers().libraries
       .filterNot(_.key == "t3hnar")
       .flatMap { lib =>
-      Try {
-        lib.hash(plaintext)
-      } match {
-        case Success(enc) => None
-        case Failure(ex) => Some(s"Lib[${lib.key}] failed to hash long password: ${ex.getMessage}")
-      }
-    } mustBe Nil
+        Try {
+          lib.hash(plaintext)
+        } match {
+          case Success(enc) => None
+          case Failure(ex) => Some(s"Lib[${lib.key}] failed to hash long password: ${ex.getMessage}")
+        }
+      } mustBe Nil
   }
 }
