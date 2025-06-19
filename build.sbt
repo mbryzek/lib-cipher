@@ -2,7 +2,7 @@ name := "lib-cipher"
 
 organization := "com.mbryzek"
 
-ThisBuild / scalaVersion := "2.13.15"
+ThisBuild / scalaVersion := "2.13.16"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
@@ -27,10 +27,10 @@ lazy val root = project
     testOptions += Tests.Argument("-oDF"),
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
-      "com.password4j" % "password4j" % "1.8.2",
+      "com.password4j" % "password4j" % "1.8.3",
       "com.github.t3hnar" %% "scala-bcrypt" % "4.3.0",
-      "commons-codec" % "commons-codec" % "1.17.1",
+      "commons-codec" % "commons-codec" % "1.18.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
-version := "0.0.7"
+
