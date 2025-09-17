@@ -58,7 +58,7 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
         Try {
           lib.hash(plaintext)
         } match {
-          case Success(enc) => None
+          case Success(_) => None
           case Failure(ex) => Some(s"Lib[${lib.key}] failed to hash long password: ${ex.getMessage}")
         }
       } mustBe Nil

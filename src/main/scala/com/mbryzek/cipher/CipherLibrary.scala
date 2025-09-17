@@ -81,7 +81,7 @@ case class CipherLibraryPassword4J(config: CiphersConfig) extends CipherLibrary 
 }
 
 case class CipherLibraryT3(config: CiphersConfig) extends CipherLibrary {
-  import com.github.t3hnar.bcrypt._
+  import org.springframework.security.crypto.bcrypt.BCrypt
 
   override val key: String = "t3hnar"
 
@@ -89,16 +89,14 @@ case class CipherLibraryT3(config: CiphersConfig) extends CipherLibrary {
     salt match {
       case None => false
       case Some(s) =>
-        withSalt(salt = s, plaintext = plaintext).isBcryptedBounded(
-          Base64Util.decode(hash)
-        )
+        BCrypt.checkpw(withSalt(salt = s, plaintext = plaintext), Base64Util.decode(hash))
     }
   }
 
   override def hash(plaintext: String): HashedValue = {
     val salt = Ciphers.random.nextLong().toString
     toHashedValue(Some(salt)) {
-      withSalt(salt, plaintext).bcryptBounded(config.rounds)
+      BCrypt.hashpw(withSalt(salt, plaintext), BCrypt.gensalt(config.rounds))
     }
   }
 
