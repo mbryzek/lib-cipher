@@ -2,7 +2,7 @@ name := "lib-cipher"
 
 organization := "com.mbryzek"
 
-ThisBuild / scalaVersion := "3.7.3"
+ThisBuild / scalaVersion := "3.7.4"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
@@ -29,7 +29,7 @@ lazy val root = project
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
       "com.password4j" % "password4j" % "1.8.4",
-      "org.springframework.security" % "spring-security-crypto" % "6.5.5",
+      "org.springframework.security" % "spring-security-crypto" % "6.5.6",
       "org.mindrot" % "jbcrypt" % "0.4",
       "commons-codec" % "commons-codec" % "1.19.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
