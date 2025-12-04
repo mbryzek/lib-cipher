@@ -29,9 +29,9 @@ lazy val root = project
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
       "com.password4j" % "password4j" % "1.8.4",
-      "org.springframework.security" % "spring-security-crypto" % "6.5.6",
+      "org.springframework.security" % "spring-security-crypto" % "7.0.0",
       "org.mindrot" % "jbcrypt" % "0.4",
-      "commons-codec" % "commons-codec" % "1.19.0",
+      "commons-codec" % "commons-codec" % "1.20.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
