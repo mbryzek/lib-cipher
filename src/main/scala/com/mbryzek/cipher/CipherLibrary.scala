@@ -22,13 +22,14 @@ object Ciphers {
 }
 
 case class Ciphers(config: CiphersConfig = Ciphers.DefaultConfig) {
-  val libraries: Seq[CipherLibrary] = Seq(
-    CipherLibraryT3(config),
-    CipherLibraryPassword4J(config),
-    CipherLibraryMindrot(config)
-  )
+  val latest: CipherLibraryPassword4J = CipherLibraryPassword4J(config)
 
-  def latest: CipherLibrary = CipherLibraryPassword4J(config)
+  val libraries: Seq[CipherLibrary] = Seq(
+    latest,
+    CipherLibraryT3(config),
+    CipherLibraryMindrot(config),
+    PlaintextLibrary(config)
+  )
 
   def instance(library: String): Option[CipherLibrary] = {
     val formatted = library.toLowerCase().trim
@@ -117,5 +118,17 @@ case class CipherLibraryMindrot(config: CiphersConfig) extends CipherLibrary {
     toHashedValue(None) {
       BCrypt.hashpw(plaintext, BCrypt.gensalt(config.rounds))
     }
+  }
+}
+
+// Useful for testing
+case class PlaintextLibrary(config: CiphersConfig) extends CipherLibrary {
+  override val key: String = "plaintext"
+  override def isValid(plaintext: String, hash: String, salt: Option[String] = None): Boolean = {
+    plaintext == Base64Util.decode(hash)
+  }
+
+  override def hash(plaintext: String): HashedValue = {
+    toHashedValue(None)(plaintext)
   }
 }
