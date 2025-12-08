@@ -6,6 +6,23 @@ ThisBuild / scalaVersion := "3.7.4"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
+ThisBuild / organization := "com.bryzek"
+ThisBuild / homepage := Some(url("https://github.com/mbryzek/lib-cipher"))
+ThisBuild / licenses := Seq("MIT" -> url("https://github.com/mbryzek/lib-cipher/blob/main/LICENSE"))
+ThisBuild / developers := List(
+  Developer("mbryzek", "Michael Bryzek", "mbryzek@alum.mit.edu", url("https://github.com/mbryzek"))
+)
+ThisBuild / scmInfo := Some(
+  ScmInfo(url("https://github.com/mbryzek/lib-cipher"), "scm:git@github.com:mbryzek/lib-cipher.git")
+)
+
+ThisBuild / publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeCredentialHost := "central.sonatype.com"
+ThisBuild / publishMavenStyle := true
+
+// Cross-build for multiple Scala versions
+ThisBuild / crossScalaVersions := Seq("2.13.12", "3.3.1")
+
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Xfatal-warnings",
