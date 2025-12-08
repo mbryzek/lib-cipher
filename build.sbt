@@ -21,7 +21,7 @@ ThisBuild / sonatypeCredentialHost := "central.sonatype.com"
 ThisBuild / publishMavenStyle := true
 
 // Cross-build for multiple Scala versions
-ThisBuild / crossScalaVersions := Seq("2.13.12", "3.3.1")
+ThisBuild / crossScalaVersions := Seq("2.13.18", "3.7.4")
 
 lazy val allScalacOptions = Seq(
   "-feature",
