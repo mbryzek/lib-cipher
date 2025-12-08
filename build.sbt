@@ -1,11 +1,8 @@
 name := "lib-cipher"
 
-organization := "com.mbryzek"
+organization := "com.bryzek"
 
 version := "0.0.15"
-scalaVersion := "3.7.4"
-
-ThisBuild / scalaVersion := scalaVersion.value
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
@@ -25,7 +22,9 @@ ThisBuild / sonatypeRepository := "https://central.sonatype.com/api/v1/publisher
 ThisBuild / publishMavenStyle := true
 
 // Cross-build for multiple Scala versions
+scalaVersion := "3.7.4"
 ThisBuild / crossScalaVersions := Seq("2.13.18", scalaVersion.value)
+ThisBuild / scalaVersion := scalaVersion.value
 
 lazy val allScalacOptions = Seq(
   "-feature",
@@ -44,8 +43,8 @@ lazy val root = project
   .settings(
     resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
     scalafmtOnCompile := true,
-    Compile / doc / sources := Seq.empty,
-    Compile / packageDoc / publishArtifact := false,
+    Compile / packageDoc / mappings := Seq(),
+    Compile / packageDoc / publishArtifact := true,
     testOptions += Tests.Argument("-oDF"),
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
