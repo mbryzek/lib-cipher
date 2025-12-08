@@ -1,4 +1,4 @@
-package com.mbryzek.cipher
+package com.bryzek.cipher
 
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -9,7 +9,7 @@ import scala.util.{Failure, Success, Try}
 class CipherLibrarySpec extends AnyWordSpec with Matchers {
 
   "readme" in {
-    val cipher = com.mbryzek.cipher.Ciphers().latest
+    val cipher = com.bryzek.cipher.Ciphers().latest
     val enc = cipher.hash("plaintext")
     println(
       s"Encrypted hash, base 64 encoded is: ${enc.hash}. Config rounds[${enc.rounds}], timeMs[${enc.timeToHashMs}]"

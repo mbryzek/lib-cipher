@@ -1,4 +1,4 @@
-package com.mbryzek.cipher
+package com.bryzek.cipher
 
 import java.security.SecureRandom
 

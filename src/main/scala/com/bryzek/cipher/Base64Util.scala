@@ -1,4 +1,4 @@
-package com.mbryzek.cipher
+package com.bryzek.cipher
 
 import org.apache.commons.codec.binary.Base64
 
