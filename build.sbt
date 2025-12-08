@@ -2,7 +2,7 @@ name := "lib-cipher"
 
 organization := "com.bryzek"
 
-version := "0.0.15"
+version := "0.0.16"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
@@ -22,11 +22,23 @@ ThisBuild / sonatypeRepository := "https://central.sonatype.com/api/v1/publisher
 ThisBuild / publishMavenStyle := true
 
 // Cross-build for multiple Scala versions
-scalaVersion := "3.7.4"
-ThisBuild / crossScalaVersions := Seq("2.13.18", scalaVersion.value)
-ThisBuild / scalaVersion := scalaVersion.value
+val scala2Version = "2.13.18"
+val scala3Version = "3.7.4"
 
-lazy val allScalacOptions = Seq(
+ThisBuild / scalaVersion := scala3Version
+ThisBuild / crossScalaVersions := Seq(scala2Version, scala3Version)
+
+lazy val scala2Options = Seq(
+  "-feature",
+  "-Xfatal-warnings",
+  "-Wunused:locals",
+  "-Wunused:params",
+  "-Wunused:imports",
+  "-Wunused:privates",
+  "-deprecation",
+)
+
+lazy val scala3Options = Seq(
   "-feature",
   "-Xfatal-warnings",
   "-Wunused:locals",
@@ -46,7 +58,12 @@ lazy val root = project
     Compile / packageDoc / mappings := Seq(),
     Compile / packageDoc / publishArtifact := true,
     testOptions += Tests.Argument("-oDF"),
-    scalacOptions ++= allScalacOptions,
+    scalacOptions ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, _)) => scala2Options
+        case _ => scala3Options
+      }
+    },
     libraryDependencies ++= Seq(
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.0.0",
