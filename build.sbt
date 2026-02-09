@@ -23,7 +23,7 @@ ThisBuild / publishMavenStyle := true
 
 // Cross-build for multiple Scala versions
 val scala2Version = "2.13.18"
-val scala3Version = "3.7.4"
+val scala3Version = "3.8.1"
 
 ThisBuild / scalaVersion := scala3Version
 ThisBuild / crossScalaVersions := Seq(scala2Version, scala3Version)
@@ -40,12 +40,11 @@ lazy val scala2Options = Seq(
 
 lazy val scala3Options = Seq(
   "-feature",
-  "-Xfatal-warnings",
+  "-Werror",
   "-Wunused:locals",
   "-Wunused:params",
   "-Wimplausible-patterns",
   "-Wunused:linted",
-  "-Wunused:unsafe-warn-patvars",
   "-Wunused:imports",
   "-Wunused:privates",
 )
@@ -68,7 +67,7 @@ lazy val root = project
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.0.0",
       "org.mindrot" % "jbcrypt" % "0.4",
-      "commons-codec" % "commons-codec" % "1.20.0",
+      "commons-codec" % "commons-codec" % "1.21.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
