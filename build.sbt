@@ -67,7 +67,7 @@ lazy val root = project
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.0.5",
       "org.mindrot" % "jbcrypt" % "0.4",
-      "commons-codec" % "commons-codec" % "1.21.0",
+      "commons-codec" % "commons-codec" % "1.22.0",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
