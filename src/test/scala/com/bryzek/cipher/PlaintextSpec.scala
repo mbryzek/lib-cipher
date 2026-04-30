@@ -1,5 +1,6 @@
 package com.bryzek.cipher
 
+import com.bryzek.util.Base64Util
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

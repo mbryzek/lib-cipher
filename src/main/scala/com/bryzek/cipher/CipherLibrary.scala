@@ -1,5 +1,7 @@
 package com.bryzek.cipher
 
+import com.bryzek.util.Base64Util
+
 import java.security.SecureRandom
 
 /** @param hash
