@@ -1,7 +1,5 @@
 name := "lib-cipher"
 
-organization := "com.bryzek"
-
 version := "0.0.26"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
