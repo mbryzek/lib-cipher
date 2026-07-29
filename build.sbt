@@ -44,11 +44,11 @@ lazy val root = project
     testOptions += Tests.Argument("-oDF"),
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.31",
+      "com.bryzek" %% "lib-util" % "0.0.37",
       "com.password4j" % "password4j" % "1.8.4",
-      "org.springframework.security" % "spring-security-crypto" % "7.0.5",
+      "org.springframework.security" % "spring-security-crypto" % "7.1.0",
       "org.mindrot" % "jbcrypt" % "0.4",
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
     ),
   )
 
