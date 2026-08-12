@@ -31,7 +31,7 @@ lazy val allScalacOptions = Seq(
   "-Wimplausible-patterns",
   "-Wunused:linted",
   "-Wunused:imports",
-  "-Wunused:privates",
+  "-Wunused:privates"
 )
 
 lazy val root = project
@@ -49,7 +49,7 @@ lazy val root = project
     // reported as slow.
     testOptions ++= Seq(
       Tests.Argument("-oDF"),
-      Tests.Argument(TestFrameworks.ScalaTest, "-u", (target.value / "test-reports").getAbsolutePath),
+      Tests.Argument(TestFrameworks.ScalaTest, "-u", (target.value / "test-reports").getAbsolutePath)
     ),
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
@@ -57,7 +57,6 @@ lazy val root = project
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.1.0",
       "org.mindrot" % "jbcrypt" % "0.4",
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
-    ),
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
+    )
   )
-
