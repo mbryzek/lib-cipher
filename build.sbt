@@ -53,7 +53,7 @@ lazy val root = project
     ),
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.41",
+      "com.bryzek" %% "lib-util" % "0.0.46",
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.1.0",
       "org.mindrot" % "jbcrypt" % "0.4",
