@@ -19,25 +19,28 @@ ThisBuild / scmInfo := Some(
 ThisBuild / publishTo := sonatypePublishToBundle.value
 ThisBuild / sonatypeCredentialHost := "central.sonatype.com"
 ThisBuild / sonatypeRepository := "https://central.sonatype.com/api/v1/publisher"
-ThisBuild / publishMavenStyle := true
 
 ThisBuild / scalaVersion := "3.8.4"
 
+// `-feature` is what makes a `-Werror` failure name the construct, the file and the line.
+// Without it the compiler says only "there was 1 feature warning; re-run with -feature",
+// and the `ci` log is the only artifact that run leaves -- nobody can re-run it
+// interactively. Order below is the two general flags, then the `-W` set alphabetically,
+// so a new option has one obvious place to go.
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Werror",
+  "-Wimplausible-patterns",
+  "-Wunused:imports",
+  "-Wunused:linted",
   "-Wunused:locals",
   "-Wunused:params",
-  "-Wimplausible-patterns",
-  "-Wunused:linted",
-  "-Wunused:imports",
   "-Wunused:privates"
 )
 
 lazy val root = project
   .in(file("."))
   .settings(
-    resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
     scalafmtOnCompile := true,
     Compile / packageDoc / mappings := Seq(),
     Compile / packageDoc / publishArtifact := true,
