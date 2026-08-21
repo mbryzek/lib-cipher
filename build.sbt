@@ -88,9 +88,9 @@ lazy val root = project
     ),
     scalacOptions ++= allScalacOptions,
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.49",
+      "com.bryzek" %% "lib-util" % "0.0.51",
       "com.password4j" % "password4j" % "1.8.4",
-      "org.springframework.security" % "spring-security-crypto" % "7.1.0",
+      "org.springframework.security" % "spring-security-crypto" % "7.1.1",
       "org.mindrot" % "jbcrypt" % "0.4",
       // org.lz4:lz4-java reaches the test classpath only here, transitively:
       // scalatestplus-play -> play-ws -> play -> pekko-serialization-jackson -> lz4-java.
