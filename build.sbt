@@ -80,7 +80,7 @@ ThisBuild / dependencyOverrides ++= Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
 )
 
-// logback moves as a PAIR, and the version is a security floor that TWO advisories set.
+// logback moves as a PAIR, and the version is a security floor that THREE advisories set.
 //
 // logback resolves in this build only through `scalatestplus-play % Test` -> play-test, which
 // declares logback-classic 1.5.18 -- inside the affected range of both. Nothing in `src/main`
@@ -100,7 +100,16 @@ ThisBuild / dependencyOverrides ++= Seq(
 // appenders beside it are still attached. `LogbackPinSpec` asserts that, because neither half of it
 // can be read off a version number.
 //
-// BOTH COORDINATES, AT ONE VERSION, and for two reasons that point the same way. logback publishes
+// GHSA-p47f-322f-whfh: through 1.5.32, logback-core's `HardenedObjectInputStream` -- the
+// deserializer behind `SimpleSocketServer` and `SimpleSSLSocketServer` -- decided what a
+// socket-delivered logging event may instantiate by PREFIX: a class name beginning `java.lang` or
+// `java.util` was admitted whatever class it actually named. From 1.5.33 the same decision is an
+// equality test against sixteen named classes, and everything else in those packages is refused
+// with `InvalidClassException`. `LogbackPinSpec` asks the class itself for that refusal, because a
+// pin that has stopped applying resolves cleanly and says nothing. This is the highest of the three
+// floors, so 1.5.33 -- not 1.5.25 -- is the lowest this pin may state.
+//
+// BOTH COORDINATES, AT ONE VERSION, and for three reasons that point the same way. logback publishes
 // classic and core as one train: classic subclasses core's appender, model and joran types, and its
 // OSGi manifest imports `ch.qos.logback.core` at `[1.5,2)` rather than at a floor, so overriding
 // core alone resolves cleanly and breaks where a version conflict is hardest to read -- the first
@@ -111,7 +120,10 @@ ThisBuild / dependencyOverrides ++= Seq(
 // configuration and every appender-ref is skipped, not just the undeclared ones. `LogbackPinSpec`
 // drives an event through the pair, reads the resolved core version back, and asserts the
 // declaration check, so a partial pin or a deleted override fails by name here rather than in a
-// consumer.
+// consumer. The hardened-stream fix says the same thing a third way: it changed
+// `HardenedObjectInputStream`'s constructors to take a `Context`, and logback-classic 1.5.32's
+// `HardenedLoggingEventInputStream` calls the two-argument one its superclass no longer has, so
+// bumping core alone resolves cleanly and throws NoSuchMethodError at class initialization.
 //
 // `dependencyOverrides` RATHER THAN A DECLARED DEPENDENCY, because neither this library nor its
 // suite calls logback: it is absent from the compile tree and so from the published POM, and an
@@ -120,8 +132,8 @@ ThisBuild / dependencyOverrides ++= Seq(
 // would publish a logback edge from a library that never loads it and put a floor under platform
 // and acumen, which take their binding from play-logback and pin it themselves.
 //
-// 1.5.34 rather than either advisory's own floor: it is the assessed target, it clears the higher
-// of the two (1.5.25), it carries no open advisory of its own, and it stays on the 1.5 line that
+// 1.5.34 rather than any one advisory's own floor: it is the assessed target, it clears the highest
+// of the three (1.5.33), it carries no open advisory of its own, and it stays on the 1.5 line that
 // play-test 3.0.8 was built against, so nothing else in the resolution moves.
 lazy val logbackVersion = "1.5.34"
 
