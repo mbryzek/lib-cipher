@@ -80,30 +80,66 @@ ThisBuild / dependencyOverrides ++= Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
 )
 
-// logback resolves at one version in this build, and logback-classic moves with logback-core.
+// logback moves as a PAIR, and the version is a security floor that THREE advisories set.
 //
-// Neither coordinate is declared anywhere here: logback reaches this build only through the test
-// classpath, scalatestplus-play -> play-test -> logback-classic -> logback-core, so the version is
-// whatever that transitive happens to carry. logback-core below 1.5.34 lets the deserialization
-// modules its HardenedObjectInputStream is supposed to bound instantiate classes outside that
-// bound, which turns any path that reads a serialized logging event into an object-injection sink
-// (GHSA-jhq6-gfmj-v8fx).
+// logback resolves in this build only through `scalatestplus-play % Test` -> play-test, which
+// declares logback-classic 1.5.18 -- inside the affected range of both. Nothing in `src/main`
+// links against it.
 //
-// AN OVERRIDE, NOT A DECLARATION. A declaration is what a compile-scope edge needs, because that
-// one reaches every consumer through the published POM and a fix that does not is a library that
-// merely reads as fixed. This edge is test scope -- the same distinction the lz4-java exclusion
-// below turns on -- so no consumer resolves logback through this library at all and a
-// resolution-local fix is the whole fix.
+// GHSA-25qh-j22f-pwp8: logback-core evaluates a conditional configuration element (`<if>`/`<then>`,
+// compiled by Janino) out of the configuration file it was handed, so whoever can write that file
+// or set the environment variable naming it chooses code the JVM then runs. Fixed in 1.5.19.
 //
-// logback-classic is pinned alongside rather than left where the transitive put it. The two
-// publish as one release train and classic compiles against core's internals, so a classic paired
-// with a core it was not built against links fine and throws NoSuchMethodError or
-// AbstractMethodError on whichever appender path first touches a changed member.
+// GHSA-qqpg-mvqg-649v: logback-core below 1.5.25 resolves an `<appender-ref>` out of the appender
+// bag without ever asking whether the configuration DECLARED an appender of that name. It is an ACE
+// against configuration processing too -- an attacker who can write the configuration file gets a
+// class already on the class path instantiated -- but the part that shows on a healthy build is
+// quieter: a reference to a name that was never declared leaves the referring logger with NO
+// appenders at all, the declared ones beside it included, and records nothing about it. 1.5.25 adds
+// the declaration check, so an undeclared reference is warned about and skipped and the declared
+// appenders beside it are still attached. `LogbackPinSpec` asserts that, because neither half of it
+// can be read off a version number.
+//
+// GHSA-p47f-322f-whfh: through 1.5.32, logback-core's `HardenedObjectInputStream` -- the
+// deserializer behind `SimpleSocketServer` and `SimpleSSLSocketServer` -- decided what a
+// socket-delivered logging event may instantiate by PREFIX: a class name beginning `java.lang` or
+// `java.util` was admitted whatever class it actually named. From 1.5.33 the same decision is an
+// equality test against sixteen named classes, and everything else in those packages is refused
+// with `InvalidClassException`. `LogbackPinSpec` asks the class itself for that refusal, because a
+// pin that has stopped applying resolves cleanly and says nothing. This is the highest of the three
+// floors, so 1.5.33 -- not 1.5.25 -- is the lowest this pin may state.
+//
+// BOTH COORDINATES, AT ONE VERSION, and for three reasons that point the same way. logback publishes
+// classic and core as one train: classic subclasses core's appender, model and joran types, and its
+// OSGi manifest imports `ch.qos.logback.core` at `[1.5,2)` rather than at a floor, so overriding
+// core alone resolves cleanly and breaks where a version conflict is hardest to read -- the first
+// time a logger is configured, as a NoSuchMethodError from inside logback. The declaration check
+// spans them as well: its analyser lives in logback-core but logback-classic is what registers that
+// analyser with the processor, so logback-core alone at 1.5.25+ leaves the guard registered by
+// nobody -- WORSE than not bumping, because the declared-appender set is then empty for the whole
+// configuration and every appender-ref is skipped, not just the undeclared ones. `LogbackPinSpec`
+// drives an event through the pair, reads the resolved core version back, and asserts the
+// declaration check, so a partial pin or a deleted override fails by name here rather than in a
+// consumer. The hardened-stream fix says the same thing a third way: it changed
+// `HardenedObjectInputStream`'s constructors to take a `Context`, and logback-classic 1.5.32's
+// `HardenedLoggingEventInputStream` calls the two-argument one its superclass no longer has, so
+// bumping core alone resolves cleanly and throws NoSuchMethodError at class initialization.
+//
+// `dependencyOverrides` RATHER THAN A DECLARED DEPENDENCY, because neither this library nor its
+// suite calls logback: it is absent from the compile tree and so from the published POM, and an
+// override is what keeps it that way -- sbt writes no `dependencyOverrides` into the POM, so this
+// decides what this repo tests against and imposes nothing on a consumer. Declaring it instead
+// would publish a logback edge from a library that never loads it and put a floor under platform
+// and acumen, which take their binding from play-logback and pin it themselves.
+//
+// 1.5.34 rather than any one advisory's own floor: it is the assessed target, it clears the highest
+// of the three (1.5.33), it carries no open advisory of its own, and it stays on the 1.5 line that
+// play-test 3.0.8 was built against, so nothing else in the resolution moves.
 lazy val logbackVersion = "1.5.34"
 
 ThisBuild / dependencyOverrides ++= Seq(
-  "ch.qos.logback" % "logback-core" % logbackVersion,
   "ch.qos.logback" % "logback-classic" % logbackVersion,
+  "ch.qos.logback" % "logback-core" % logbackVersion,
 )
 
 // Keep the unused browser-automation stack off the test classpath.
