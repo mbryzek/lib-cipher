@@ -80,7 +80,7 @@ ThisBuild / dependencyOverrides ++= Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
 )
 
-// logback moves as a PAIR, and the version is a security floor that THREE advisories set.
+// logback moves as a PAIR, and the version is a security floor that FOUR advisories set.
 //
 // logback resolves in this build only through `scalatestplus-play % Test` -> play-test, which
 // declares logback-classic 1.5.18 -- inside the affected range of both. Nothing in `src/main`
@@ -106,8 +106,21 @@ ThisBuild / dependencyOverrides ++= Seq(
 // `java.util` was admitted whatever class it actually named. From 1.5.33 the same decision is an
 // equality test against sixteen named classes, and everything else in those packages is refused
 // with `InvalidClassException`. `LogbackPinSpec` asks the class itself for that refusal, because a
-// pin that has stopped applying resolves cleanly and says nothing. This is the highest of the three
-// floors, so 1.5.33 -- not 1.5.25 -- is the lowest this pin may state.
+// pin that has stopped applying resolves cleanly and says nothing.
+//
+// GHSA-jhq6-gfmj-v8fx: that check bounds what a stream may NAME, and through 1.5.33 nothing bounded
+// what the stream may have the JVM SYNTHESISE. `HardenedObjectInputStream` left `resolveProxyClass`
+// to `ObjectInputStream`, which defines a proxy class for whatever interface names the stream
+// carries -- before any of logback's checks can run, because those inspect resolved class names and
+// a proxy has none until it has been defined. Whether the proxy then materialises depends on the
+// whitelist naming `java.lang.reflect.Proxy` and the handler's own class; logback's built-in socket
+// whitelist names neither, which is why the advisory calls the injection heavily restricted, but a
+// caller-supplied whitelist can name both, and then the stream chooses the interfaces AND the
+// `InvocationHandler` behind them. 1.5.34 overrides `resolveProxyClass` to refuse unconditionally,
+// so no whitelist re-admits a proxy. This is the highest of the four floors, so 1.5.34 -- not
+// 1.5.33 -- is the lowest this pin may state, and `LogbackPinSpec` asserts it against a whitelist
+// naming both classes an affected version stops at, since one with an empty whitelist passes on
+// 1.5.33 and proves nothing.
 //
 // BOTH COORDINATES, AT ONE VERSION, and for three reasons that point the same way. logback publishes
 // classic and core as one train: classic subclasses core's appender, model and joran types, and its
@@ -132,9 +145,11 @@ ThisBuild / dependencyOverrides ++= Seq(
 // would publish a logback edge from a library that never loads it and put a floor under platform
 // and acumen, which take their binding from play-logback and pin it themselves.
 //
-// 1.5.34 rather than any one advisory's own floor: it is the assessed target, it clears the highest
-// of the three (1.5.33), it carries no open advisory of its own, and it stays on the 1.5 line that
-// play-test 3.0.8 was built against, so nothing else in the resolution moves.
+// 1.5.34 is the highest of the four floors rather than a margin above them: 1.5.19, 1.5.25 and
+// 1.5.33 clear the first three, and the fourth affects 1.5.33 itself. So this is the lowest version
+// that answers every advisory, and no advisory's own lower floor is grounds for falling back below
+// it. It carries no open advisory of its own and stays on the 1.5 line that play-test 3.0.8 was
+// built against, so nothing else in the resolution moves.
 lazy val logbackVersion = "1.5.34"
 
 ThisBuild / dependencyOverrides ++= Seq(
