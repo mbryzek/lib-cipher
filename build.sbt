@@ -1,6 +1,6 @@
 name := "lib-cipher"
 
-version := "0.0.48"
+version := "0.0.49"
 
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
