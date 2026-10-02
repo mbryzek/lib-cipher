@@ -80,6 +80,43 @@ ThisBuild / dependencyOverrides ++= Seq(
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
 )
 
+// Jackson 3 -- the `tools.jackson` coordinates -- resolves to one version too. It is a separate
+// family from the `com.fasterxml.jackson` one above rather than a newer release of it, and the two
+// coexist here: the packages differ, so neither shadows the other and conflict resolution never
+// puts them in the same bucket. Jackson 3's databind still depends on the 2.x
+// `com.fasterxml.jackson.core:jackson-annotations` -- there is no `tools.jackson.core`
+// annotations artifact -- and the 3.1 line asks for 2.21, which the annotations pin above already
+// satisfies.
+//
+// It arrives through lib-util -> net.logstash.logback:logstash-logback-encoder 9.0, which moved
+// its JSON encoding to Jackson 3 and declares tools.jackson.core:jackson-databind 3.0.1 at compile
+// scope; databind brings tools.jackson.core:jackson-core with it. Those two are the whole of
+// Jackson 3 on this classpath. lib-util pins the pair in its own build, but sbt writes no
+// `dependencyOverrides` into a published POM, so that pin governs lib-util's build alone and this
+// one resolves whatever the encoder's POM names unless it states its own -- which is the 3.0.1
+// that twelve advisories are open against.
+//
+// The floor is a security one. jackson-core below 3.1.4 applies maxNumberLength to the digits
+// within each chunk fed to the non-blocking parser rather than to the number accumulated across
+// feeds (GHSA-r7wm-3cxj-wff9), and below 3.1.1 bypasses the document length limit
+// (GHSA-2m67-wjpj-xhg9). jackson-databind below 3.1.4 admits a denied type through a generic
+// argument (GHSA-j3rv-43j4-c7qm) or as an array's component (GHSA-rmj7-2vxq-3g9f), and below
+// 3.1.5 replays a `@JsonUnwrapped` property's buffered JSON without asking whether that property
+// is visible in the active view (GHSA-5gvw-p9qm-jgwh). Databind below 3.1.6 carries three more
+// (GHSA-gx83-3vf8-gh7j, GHSA-q4xh-88c3-wmh7, GHSA-wjgm-6hv5-3cvf), so 3.1.6 is the lowest this
+// pin may state, and it is the version lib-util, platform and acumen pin. The 3.2 line is a
+// further minor above what the encoder was compiled against and is deliberately not chosen.
+// `Jackson3PinSpec` asserts two of those limits behaviourally, so a pin that slips below the floor
+// fails there by name.
+//
+// As above, this governs THIS build's resolution only and imposes no floor on a consumer.
+lazy val jackson3Version = "3.1.6"
+
+ThisBuild / dependencyOverrides ++= Seq(
+  "tools.jackson.core" % "jackson-databind" % jackson3Version,
+  "tools.jackson.core" % "jackson-core" % jackson3Version,
+)
+
 // logback moves as a PAIR, and the version is a security floor that FOUR advisories set.
 //
 // logback resolves in this build only through `scalatestplus-play % Test` -> play-test, which
