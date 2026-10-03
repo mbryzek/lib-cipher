@@ -1,4 +1,4 @@
-package com.bryzek.cipher
+package com.bryzek.pins
 
 import ch.qos.logback.classic.joran.JoranConfigurator
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -16,19 +16,19 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.slf4j.Logger.ROOT_LOGGER_NAME
 import scala.jdk.CollectionConverters.*
 
-/** The logback pair this build resolves is pinned in build.sbt rather than inherited, and every way
-  * that pin can be wrong resolves cleanly and says nothing.
+/** The logback pair this build resolves is pinned by `BryzekPins.logback` rather than inherited, and
+  * every way that pin can be wrong resolves cleanly and says nothing.
   *
-  * One of the two advisories the pin exists for cannot be observed as behaviour here.
+  * One of the four advisories the pin exists for cannot be observed as behaviour here.
   * GHSA-25qh-j22f-pwp8 is reached through logback-core's conditional configuration processing: an
   * `<if>` element whose condition Janino compiles and runs, out of a configuration file an attacker
   * can write or select through an environment variable. Observing the fix would mean putting Janino
   * on this test classpath and handing logback a hostile configuration -- adding the library the
   * advisory names as its own precondition, to a build that has neither it nor any logback
   * configuration at all. So this reads the resolved version instead, which is the whole of what the
-  * override controls: remove it and play-test's own 1.5.18 is what resolves.
+  * pin controls: remove it and whatever the classpath brings transitively is what resolves.
   *
-  * The other one IS observable. logback-core below 1.5.25 resolves an `<appender-ref>` out of the
+  * The second one IS observable. logback-core below 1.5.25 resolves an `<appender-ref>` out of the
   * appender bag without ever asking whether the configuration DECLARED an appender of that name
   * (GHSA-qqpg-mvqg-649v). What that costs a correct configuration is total and unreported: one
   * reference to a name nothing declares -- a typo, a substituted property that resolved to nothing
