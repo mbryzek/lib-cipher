@@ -1,5 +1,6 @@
 package com.bryzek.cipher
 
+import com.bryzek.util.Base64Util
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -8,21 +9,28 @@ import scala.util.{Failure, Success, Try}
 
 class CipherLibrarySpec extends AnyWordSpec with Matchers {
 
+  // bcrypt's cost is exponential: the default 14 rounds is ~1s per hash or check, so the
+  // round-trip assertions run at bcrypt's minimum cost. The cost is a parameter each library
+  // passes straight through, which "hashes at the configured cost" asserts, and the default
+  // itself is asserted on the config without hashing at it.
+  private val TestConfig: CiphersConfig = CiphersConfig(rounds = 4)
+  private val ciphers: Ciphers = Ciphers(TestConfig)
+
   "readme" in {
-    val cipher = com.bryzek.cipher.Ciphers().latest
+    val cipher = ciphers.latest
     val enc = cipher.hash("plaintext")
-    println(
-      s"Encrypted hash, base 64 encoded is: ${enc.hash}. Config rounds[${enc.rounds}], timeMs[${enc.timeToHashMs}]"
-    )
-    if (cipher.isValid(plaintext = "test", hash = enc.hash, salt = enc.salt)) {
-      println("Plaintext matches hash")
-    } else {
-      println("Plaintext does not match hash")
-    }
+    enc.rounds mustBe TestConfig.rounds
+    cipher.isValid(plaintext = "plaintext", hash = enc.hash, salt = enc.salt) mustBe true
+    cipher.isValid(plaintext = "test", hash = enc.hash, salt = enc.salt) mustBe false
+  }
+
+  "default config" in {
+    Ciphers.DefaultConfig.rounds mustBe 14
+    Ciphers().config mustBe Ciphers.DefaultConfig
   }
 
   "hash" in {
-    Ciphers().libraries.flatMap { lib =>
+    ciphers.libraries.flatMap { lib =>
       val plaintext = UUID.randomUUID().toString
       val enc = lib.hash(plaintext)
       if (!lib.isValid(plaintext = plaintext, hash = enc.hash, salt = enc.salt)) {
@@ -33,6 +41,19 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
         None
       }
     } mustBe Nil
+  }
+
+  "hashes at the configured cost" in {
+    ciphers.libraries
+      .filterNot(_.key == "plaintext")
+      .flatMap { lib =>
+        val decoded = Base64Util.decode(lib.hash("plaintext").hash)
+        if (decoded.startsWith("$2") && decoded.split('$').lift(2).contains("04")) {
+          None
+        } else {
+          Some(s"Lib[${lib.key}] did not hash at cost 04")
+        }
+      } mustBe Nil
   }
 
   "latest" in {
@@ -52,7 +73,7 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
 
   "supports long passwords" in {
     val plaintext = "a" * 100
-    Ciphers().libraries
+    ciphers.libraries
       .filterNot(_.key == "t3hnar")
       .flatMap { lib =>
         Try {
