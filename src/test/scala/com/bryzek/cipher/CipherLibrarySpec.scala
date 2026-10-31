@@ -27,6 +27,7 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
   "default config" in {
     Ciphers.DefaultConfig.rounds mustBe 14
     Ciphers().config mustBe Ciphers.DefaultConfig
+    Ciphers.Default.config mustBe Ciphers.DefaultConfig
   }
 
   "hash" in {
