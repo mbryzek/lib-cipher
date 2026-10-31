@@ -57,18 +57,18 @@ class CipherLibrarySpec extends AnyWordSpec with Matchers {
   }
 
   "latest" in {
-    Ciphers().latest.key mustBe "password4j"
+    Ciphers.Default.latest.key mustBe "password4j"
   }
 
   "instance" in {
-    Ciphers().instance("password4j").get.key mustBe "password4j"
-    Ciphers().instance("mindrot").get.key mustBe "mindrot"
-    Ciphers().instance("t3hnar").get.key mustBe "t3hnar"
-    Ciphers().instance(UUID.randomUUID().toString) mustBe None
+    Ciphers.Default.instance("password4j").get.key mustBe "password4j"
+    Ciphers.Default.instance("mindrot").get.key mustBe "mindrot"
+    Ciphers.Default.instance("t3hnar").get.key mustBe "t3hnar"
+    Ciphers.Default.instance(UUID.randomUUID().toString) mustBe None
   }
 
   "all library keys are distinct" in {
-    Ciphers().libraries.map(_.key).distinct.length mustBe Ciphers().libraries.length
+    Ciphers.Default.libraries.map(_.key).distinct.length mustBe Ciphers.Default.libraries.length
   }
 
   "supports long passwords" in {
