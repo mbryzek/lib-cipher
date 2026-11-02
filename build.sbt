@@ -11,6 +11,11 @@ BryzekLibSettings.buildSettings("lib-cipher")
 
 ThisBuild / scalaVersion := "3.8.4"
 
+// Every com.bryzek library version from the move off Maven Central on is published to the Maven
+// repository at maven.bryzek.com (DES-35972); the versions published before it keep resolving from
+// Maven Central, which sbt lists by default.
+ThisBuild / resolvers += "Bryzek Maven repository" at "https://maven.bryzek.com"
+
 // The Jackson 2, Jackson 3 and logback security pins are DECLARED in project/BryzekPins.scala, a
 // copy of devops's templates/scala-libs/project/BryzekPins.scala that ci/build.sh holds
 // byte-identical to it, together with the pin specs under src/test/scala/com/bryzek/pins. That
