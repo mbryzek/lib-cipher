@@ -12,19 +12,19 @@
 # WHAT IT DOES NOT VOUCH FOR, and this is the important half: THAT ANY CONSUMER
 # STILL COMPILES. Nothing in the fleet builds `platform` or `acumen` against a
 # lib PR's tree. A consumer resolves a RELEASED version out of Maven Central, and
-# no released version exists until a human runs `dev release lib` — which prompts
-# and shells out to GPG, so a merge here publishes nothing. So a PR that changes
-# a signature is green here and breaks platform at the moment somebody bumps the
-# pin. That break surfaces in the CONSUMER's own version-bump PR, verified by the
-# consumer's own `ci`, which is where `dev release lib` and `Agent::LibraryPin`
-# already put it. Enrolling this repo narrows nothing about that and is not meant
-# to.
+# no released version exists until the library's rollout publishes one
+# (`dev rollout --app lib-cipher`, which tags main and has a runner build and
+# upload the signed bundle), so a merge here publishes nothing. So a PR that
+# changes a signature is green here and breaks platform at the moment somebody
+# bumps the pin. That break surfaces in the CONSUMER's own version-bump PR,
+# verified by the consumer's own build. Enrolling this repo narrows nothing about
+# that and is not meant to.
 #
 # THIS REPO IS ITSELF A CONSUMER — it pins `"com.bryzek" %% "lib-util"` — and the
 # paragraph above applies to that edge unchanged: this build resolves the
 # RELEASED lib-util out of Maven Central, so a green here says nothing about an
-# unreleased lib-util PR, and a lib-util change reaches this suite only once a
-# human has released it and a PR here has bumped the pin.
+# unreleased lib-util PR, and a lib-util change reaches this suite only once
+# lib-util's rollout has released it and a PR here has bumped the pin.
 #
 # NO DATABASE BLOCK, and that is the whole difference from
 # devops/templates/ci/build-scala.sh. That template exists for platform and
