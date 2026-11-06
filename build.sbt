@@ -9,7 +9,7 @@ version := "0.0.74"
 // it. That file carries why each setting is what it is; a change is edited there and copied here.
 BryzekLibSettings.buildSettings("lib-cipher")
 
-ThisBuild / scalaVersion := "3.8.4"
+ThisBuild / scalaVersion := "3.10.0"
 
 // Every com.bryzek library version from the move off Maven Central on is published to the Maven
 // repository at maven.bryzek.com (DES-35972); the versions published before it keep resolving from
@@ -32,7 +32,7 @@ lazy val root = project
   .settings(BryzekLibSettings.rootSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.74",
+      "com.bryzek" %% "lib-util" % "0.0.80",
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.1.2",
       "org.mindrot" % "jbcrypt" % "0.4",
