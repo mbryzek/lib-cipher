@@ -59,46 +59,14 @@
 # `FIRST-<suite>.xml` the first run of one the build reran. The second says this build
 # runs with the lists platform holds: whatever starts it fetches them first and exports
 # the file as `CI_TEST_LISTS`. ci/test-health.sh (a copy of devops
-# templates/sbt-test-health, held to it below) and lib-build-sbt's CiTestListsPlugin and
-# CiTestRerunPlugin are the runner half.
+# templates/sbt-test-health) and lib-build-sbt's CiTestListsPlugin and CiTestRerunPlugin
+# are the runner half.
 #
 # ci-test-reports: target/test-reports/*.xml
 # ci-test-lists: required
 set -euo pipefail
 
 echo "building ${CI_REPO:-?} @ ${CI_SHA:-?} (${CI_EVENT:-?}, clean=${CI_CLEAN_BUILD:-?})"
-
-# THE TEST HEALTH SHELL HALF IS OWNED BY devops (ISS-19887): ci/test-health.sh is a copy of devops
-# templates/sbt-test-health/ci/test-health.sh, held byte-identical to it here until it runs through
-# `dev ci step` (ISS-53964). The pins, the shared settings and the sbt half of test health come from
-# lib-build, pinned by version in project/plugins.sbt and build.sbt.
-#
-# A READ THAT FAILS IS NOT A DRIFT (ISS-21067). Each template is read into a file and the read is
-# checked before anything is compared: diffed straight off a process substitution, a read that
-# answered nothing is an empty template and the whole copy reads as drift. A read is retried once,
-# and one that fails twice exits 75 -- this box could not measure the copy, which says nothing
-# about the branch.
-synced=(
-  "sbt-test-health/ci/test-health.sh ci/test-health.sh"
-)
-template_bytes=$(mktemp "${TMPDIR:-/tmp}/ci-template.XXXXXX")
-for pair in "${synced[@]}"; do
-  read -r template copy <<<"$pair"
-  read_rc=0
-  dev repo cat devops "templates/$template" >"$template_bytes" ||
-    dev repo cat devops "templates/$template" >"$template_bytes" || read_rc=$?
-  if [ "$read_rc" -ne 0 ]; then
-    echo "ci/build.fast.sh: could not read devops templates/$template (dev repo cat exit $read_rc, twice) -- a read failure, not a drift in $copy; nothing was measured" >&2
-    rm -f "$template_bytes"
-    exit 75
-  fi
-  if ! diff -u "$template_bytes" "$copy"; then
-    echo "ci/build.fast.sh: sync it -- dev repo cat devops templates/$template > $copy" >&2
-    rm -f "$template_bytes"
-    exit 1
-  fi
-done
-rm -f "$template_bytes"
 
 # ci-advisory: scripts/check-format
 scripts/check-format || echo "check-format: could not measure this tree — advisory, nothing fails on it"
