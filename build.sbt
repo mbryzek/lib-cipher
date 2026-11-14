@@ -8,7 +8,7 @@ version := "0.0.78"
 // why each setting is what it is; a change is released there and taken here by a version bump.
 BryzekLibSettings.buildSettings("lib-cipher")
 
-ThisBuild / scalaVersion := "3.10.0"
+ThisBuild / scalaVersion := "3.10.1"
 
 // Every com.bryzek library version from the move off Maven Central on is published to the Maven
 // repository at maven.bryzek.com (DES-35972); the versions published before it keep resolving from
@@ -31,13 +31,13 @@ lazy val root = project
   .settings(BryzekLibSettings.rootSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.80",
+      "com.bryzek" %% "lib-util" % "0.0.84",
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.1.2",
       "org.mindrot" % "jbcrypt" % "0.4",
       // The pin suites the specs under src/test/scala/com/bryzek/pins subclass. Every dependency of
       // the testkit is Provided, so each suite asserts this build's own resolution.
-      "com.bryzek" %% "lib-build-testkit" % "0.0.1" % Test,
+      "com.bryzek" %% "lib-build-testkit" % "0.0.7" % Test,
       // org.lz4:lz4-java reaches the test classpath only here, transitively:
       // scalatestplus-play -> play-ws -> play -> pekko-serialization-jackson -> lz4-java.
       // Nothing on that classpath can call it. Pekko loads an LZ4 codec reflectively only when
