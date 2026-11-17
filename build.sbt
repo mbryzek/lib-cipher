@@ -4,7 +4,7 @@ version := "0.0.79"
 
 // Publishing metadata, the guava pin, the browser-stack exclusions, the compiler gate and the
 // root project's test reporting are shared by every lib-* repository and DECLARED in lib-build's
-// BryzekLibSettings, which project/plugins.sbt brings in through lib-build-sbt. That file carries
+// BryzekLibSettings, which project/plugins.sbt brings in through scala-build-sbt. That file carries
 // why each setting is what it is; a change is released there and taken here by a version bump.
 BryzekLibSettings.buildSettings("lib-cipher")
 
@@ -16,8 +16,8 @@ ThisBuild / scalaVersion := "3.10.1"
 ThisBuild / resolvers += "Bryzek Maven repository" at "https://maven.bryzek.com"
 
 // The Jackson 2, Jackson 3 and logback security pins are DECLARED in lib-build's BryzekPins
-// (lib-build-sbt, through project/plugins.sbt), and asserted by the pin specs under
-// src/test/scala/com/bryzek/pins, each a subclass of a lib-build-testkit suite. That file carries
+// (scala-build-sbt, through project/plugins.sbt), and asserted by the pin specs under
+// src/test/scala/com/bryzek/pins, each a subclass of a scala-build-testkit suite. That file carries
 // why each floor is what it is; an advisory bump is released there and taken here by a version bump.
 //
 // Applied as `dependencyOverrides`, which governs THIS build's resolution only -- sbt writes none
@@ -37,7 +37,7 @@ lazy val root = project
       "org.mindrot" % "jbcrypt" % "0.4",
       // The pin suites the specs under src/test/scala/com/bryzek/pins subclass. Every dependency of
       // the testkit is Provided, so each suite asserts this build's own resolution.
-      "com.bryzek" %% "lib-build-testkit" % "0.0.7" % Test,
+      "com.bryzek" %% "scala-build-testkit" % "0.0.11" % Test,
       // org.lz4:lz4-java reaches the test classpath only here, transitively:
       // scalatestplus-play -> play-ws -> play -> pekko-serialization-jackson -> lz4-java.
       // Nothing on that classpath can call it. Pekko loads an LZ4 codec reflectively only when
