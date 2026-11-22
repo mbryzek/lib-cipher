@@ -3,7 +3,7 @@ name := "lib-cipher"
 version := "0.0.81"
 
 // Publishing metadata, the guava pin, the browser-stack exclusions, the compiler gate and the
-// root project's test reporting are shared by every lib-* repository and DECLARED in lib-build's
+// root project's test reporting are shared by every lib-* repository and DECLARED in scala-build's
 // BryzekLibSettings, which project/plugins.sbt brings in through scala-build-sbt. That file carries
 // why each setting is what it is; a change is released there and taken here by a version bump.
 BryzekLibSettings.buildSettings("lib-cipher")
@@ -15,7 +15,7 @@ ThisBuild / scalaVersion := "3.10.1"
 // Maven Central, which sbt lists by default.
 ThisBuild / resolvers += "Bryzek Maven repository" at "https://maven.bryzek.com"
 
-// The Jackson 2, Jackson 3 and logback security pins are DECLARED in lib-build's BryzekPins
+// The Jackson 2, Jackson 3 and logback security pins are DECLARED in scala-build's BryzekPins
 // (scala-build-sbt, through project/plugins.sbt), and asserted by the pin specs under
 // src/test/scala/com/bryzek/pins, each a subclass of a scala-build-testkit suite. That file carries
 // why each floor is what it is; an advisory bump is released there and taken here by a version bump.
