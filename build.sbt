@@ -31,13 +31,13 @@ lazy val root = project
   .settings(BryzekLibSettings.rootSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.86",
+      "com.bryzek" %% "lib-util" % "0.0.90",
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.2.0",
       "org.mindrot" % "jbcrypt" % "0.4",
       // The pin suites the specs under src/test/scala/com/bryzek/pins subclass. Every dependency of
       // the testkit is Provided, so each suite asserts this build's own resolution.
-      "com.bryzek" %% "scala-build-testkit" % "0.0.20" % Test,
+      "com.bryzek" %% "scala-build-testkit" % "0.0.29" % Test,
       // org.lz4:lz4-java reaches the test classpath only here, transitively:
       // scalatestplus-play -> play-ws -> play -> pekko-serialization-jackson -> lz4-java.
       // Nothing on that classpath can call it. Pekko loads an LZ4 codec reflectively only when
