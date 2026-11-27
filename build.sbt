@@ -31,7 +31,7 @@ lazy val root = project
   .settings(BryzekLibSettings.rootSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "com.bryzek" %% "lib-util" % "0.0.91",
+      "com.bryzek" %% "lib-util" % "0.0.92",
       "com.password4j" % "password4j" % "1.8.4",
       "org.springframework.security" % "spring-security-crypto" % "7.2.0",
       "org.mindrot" % "jbcrypt" % "0.4",
